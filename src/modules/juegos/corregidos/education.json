@@ -1,0 +1,85 @@
+{
+  "libro": "Diccionario Educativo",
+  "id": "education",
+  "version": "1.0.0",
+
+  "proposito": "Define exclusivamente las materias y habilidades educativas disponibles.",
+
+  "naturaleza": "catalogo",
+
+  "definiciones": {
+    "matematicas": {
+      "descripcion": "Matemáticas.",
+
+      "habilidades": [
+        "calculo",
+        "suma",
+        "resta",
+        "multiplicacion",
+        "division",
+        "fracciones",
+        "porcentajes",
+        "ecuaciones",
+        "geometria",
+        "problemas"
+      ]
+    },
+
+    "geografia": {
+      "descripcion": "Geografía.",
+
+      "habilidades": [
+        "continentes",
+        "paises",
+        "capitales",
+        "banderas",
+        "orientacion",
+        "mapas"
+      ]
+    },
+
+    "lengua": {
+      "descripcion": "Lengua.",
+
+      "habilidades": [
+        "comprension",
+        "vocabulario",
+        "ortografia",
+        "inferencia"
+      ]
+    },
+
+    "ingles": {
+      "descripcion": "Inglés.",
+
+      "habilidades": [
+        "vocabulario",
+        "gramatica",
+        "comprension",
+        "frases"
+      ]
+    },
+
+    "logica": {
+      "descripcion": "Lógica.",
+
+      "habilidades": [
+        "patrones",
+        "secuencias",
+        "deduccion",
+        "clasificacion"
+      ]
+    }
+  },
+
+  "reglas": [
+    {
+      "id": "EDUCATION_SUBJECT_REGISTERED",
+      "descripcion": "Toda materia utilizada debe existir en definiciones."
+    },
+    {
+      "id": "EDUCATION_SKILL_REGISTERED",
+      "descripcion": "Toda habilidad utilizada debe existir dentro de la materia seleccionada."
+    }
+  ]
+}

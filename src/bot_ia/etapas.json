@@ -1,0 +1,116 @@
+{
+  "apertura": {
+    "objetivo": "iniciar conversación",
+    "completa": [
+      "cliente respondió algo más que saludo"
+    ],
+    "faltantes": [],
+    "acciones": [
+      "saludar",
+      "preguntar que busca"
+    ]
+  },
+
+  "descubrimiento": {
+    "objetivo": "entender necesidad",
+    "completa": [
+      "se conoce el uso (regalo, personal, negocio)"
+    ],
+    "faltantes": [
+      "uso"
+    ],
+    "acciones": [
+      "preguntar uso",
+      "aclarar intención"
+    ]
+  },
+
+  "acotacion": {
+    "objetivo": "definir tipo de producto",
+    "completa": [
+      "cliente eligió tipo (simple, eucalipto, premium)"
+    ],
+    "faltantes": [
+      "producto"
+    ],
+    "acciones": [
+      "ofrecer opciones",
+      "guiar elección"
+    ]
+  },
+
+  "propuesta": {
+    "objetivo": "definir pedido",
+    "completa": [
+      "producto definido",
+      "cantidad definida"
+    ],
+    "faltantes": [
+      "cantidad"
+    ],
+    "acciones": [
+      "pedir cantidad",
+      "confirmar producto"
+    ]
+  },
+
+  "validacion": {
+    "objetivo": "confirmar compra",
+    "completa": [
+      "cliente confirma pedido"
+    ],
+    "faltantes": [
+      "confirmacion"
+    ],
+    "acciones": [
+      "decir total",
+      "pedir confirmación"
+    ]
+  },
+
+  "cierre": {
+    "objetivo": "cobrar y coordinar entrega",
+    "completa": [
+      "pago confirmado",
+      "entrega definida"
+    ],
+    "faltantes": [
+      "pago",
+      "entrega"
+    ],
+    "acciones": [
+      "dar alias",
+      "coordinar entrega"
+    ]
+  },
+  
+
+  "reglas_globales": {
+    "no_retroceder": true,
+    "permitir_agregar_productos": true,
+    "ofrecer_solo_si_aporta": true,
+    "no_repetir_preguntas": true
+  },
+
+  "etapas": {
+    "apertura": {
+      "siguiente": ["descubrimiento"]
+    },
+    "descubrimiento": {
+      "siguiente": ["acotacion"]
+    },
+    "acotacion": {
+      "siguiente": ["propuesta"]
+    },
+    "propuesta": {
+      "siguiente": ["validacion"],
+      "puede_expandir": true
+    },
+    "validacion": {
+      "siguiente": ["cierre"]
+    },
+    "cierre": {
+      "siguiente": []
+    }
+  }
+}

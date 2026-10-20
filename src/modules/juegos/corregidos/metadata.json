@@ -1,0 +1,79 @@
+{
+  "libro": "Diccionario de Metadatos",
+  "id": "metadata",
+  "version": "1.0.0",
+
+  "proposito": "Define exclusivamente los metadatos permitidos para describir un cassette.",
+
+  "naturaleza": "contrato",
+
+  "definiciones": {
+    "meta": {
+      "descripcion": "Información general que identifica y describe el cassette.",
+
+      "campos": {
+        "id": {
+          "tipo": "string"
+        },
+
+        "titulo": {
+          "tipo": "string"
+        },
+
+        "descripcion": {
+          "tipo": "string"
+        },
+
+        "tema": {
+          "tipo": "string"
+        },
+
+        "idioma": {
+          "tipo": "string"
+        },
+
+        "edad_narrativa_min": {
+          "tipo": "number"
+        },
+
+        "edad_narrativa_max": {
+          "tipo": "number"
+        },
+
+        "jugadores_min": {
+          "tipo": "number"
+        },
+
+        "jugadores_max": {
+          "tipo": "number"
+        },
+
+        "duracion_estimada_min": {
+          "tipo": "number"
+        }
+      },
+
+      "obligatorios": [
+        "id",
+        "titulo",
+        "descripcion",
+        "tema",
+        "idioma",
+        "edad_narrativa_min",
+        "edad_narrativa_max",
+        "jugadores_min",
+        "jugadores_max",
+        "duracion_estimada_min"
+      ],
+
+      "campos_adicionales": false
+    }
+  },
+
+  "reglas": [
+    {
+      "id": "METADATA_STRUCTURE_CLOSED",
+      "descripcion": "Los metadatos solo pueden contener los campos definidos por este libro."
+    }
+  ]
+}

@@ -65,7 +65,52 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/cash-closing', async (req, res) => {
+  const client = await pool.connect();
 
+  try {
+    await client.query('BEGIN');
+
+    // Establecer el contexto de seguridad
+    await client.query(
+      `SELECT set_config('app.company_id', $1, true)`,
+      [req.user.company_id]
+    );
+
+    await client.query(
+      `SELECT set_config('app.current_role', $1, true)`,
+      [req.user.role]
+    );
+
+    await client.query(
+      `SELECT set_config('app.user_id', $1, true)`,
+      [req.user.user_id]
+    );
+
+    const { rows } = await client.query(
+      `SELECT tenant.cash_closing_report($1) AS report`,
+      [req.user.company_id]
+    );
+
+    await client.query('COMMIT');
+
+    res.json(rows[0].report || []);
+  } catch (error) {
+    await client.query('ROLLBACK');
+
+    if (error.message?.includes('forbidden')) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+
+    console.error('CASH CLOSING ERROR:', error);
+    res.status(500).json({
+      error: 'internal_error',
+      detail: error.message,
+    });
+  } finally {
+    client.release();
+  }
+});
 
 
 

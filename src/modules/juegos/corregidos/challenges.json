@@ -1,0 +1,95 @@
+{
+  "libro": "Diccionario de Challenges",
+  "id": "challenges",
+  "version": "1.0.0",
+
+  "proposito": "Define exclusivamente la estructura de una solicitud de challenge realizada por un cassette.",
+
+  "naturaleza": "contrato",
+
+  "definiciones": {
+    "challenge": {
+      "descripcion": "Solicitud de una actividad educativa que deberá resolver el motor educativo.",
+
+      "campos": {
+        "tipo": {
+          "tipo": "reference",
+          "referencia": "challenge_types.definiciones"
+        },
+
+        "materia": {
+          "tipo": "reference",
+          "referencia": "education.definiciones"
+        },
+
+        "habilidad": {
+          "tipo": "dynamic_reference",
+          "referencia_desde": "education.definiciones.{materia}.habilidades"
+        },
+
+        "dificultad": {
+          "tipo": "string",
+          "constante": "adaptativa"
+        },
+
+        "modo": {
+          "tipo": "string",
+          "constante": "individual"
+        },
+
+        "cantidad": {
+          "tipo": "number"
+        }
+      },
+
+      "obligatorios": [
+        "tipo",
+        "materia",
+        "habilidad",
+        "dificultad",
+        "modo",
+        "cantidad"
+      ],
+
+      "campos_adicionales": false,
+
+      "ejemplos": [
+        {
+          "tipo": "preguntas",
+          "materia": "matematicas",
+          "habilidad": "suma",
+          "dificultad": "adaptativa",
+          "modo": "individual",
+          "cantidad": 3
+        },
+        {
+          "tipo": "clasificar",
+          "materia": "geografia",
+          "habilidad": "continentes",
+          "dificultad": "adaptativa",
+          "modo": "individual",
+          "cantidad": 5
+        }
+      ]
+    }
+  },
+
+  "reglas": [
+    {
+      "id": "CHALLENGE_TYPE_EXISTS",
+      "descripcion": "El tipo utilizado por un challenge debe existir en el Diccionario de Tipos de Challenge."
+    },
+    {
+      "id": "CHALLENGE_SUBJECT_EXISTS",
+      "descripcion": "La materia utilizada por un challenge debe existir en el Diccionario Educativo."
+    },
+    {
+      "id": "CHALLENGE_SKILL_EXISTS",
+      "descripcion": "La habilidad utilizada debe existir dentro de la materia seleccionada."
+    },
+    {
+      "id": "CHALLENGE_REQUEST_ONLY",
+      "descripcion": "El cassette solicita el challenge pero no contiene los ejercicios concretos."
+    }
+  ]
+}

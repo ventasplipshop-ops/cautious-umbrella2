@@ -1,0 +1,34 @@
+{
+  "NOT_VALID": {
+    "template": "El cliente no se entendió bien.\n\nRespondé:\n- pedí que aclare\n- tono amable\n- máximo 2 líneas\n\nCliente: {{message}}",
+    "params": ["message"]
+  },
+  "NOT_RELEVANT": {
+    "template": "El mensaje NO es del negocio.\n\n- aclará que vendemos flores\n- redirigí\n- no sonar forzado\n\nNegocio:\n{{businessContext}}\n\nCliente: {{message}}",
+    "params": ["message", "businessContext"]
+  },
+  "UNKNOWN_INTENT": {
+    "template": "El cliente es ambiguo.\n\n- ofrecé opciones claras:\n(precio / pedido / consulta)\n- 1 pregunta máximo",
+    "params": []
+  },
+  "INVALID_PRODUCT": {
+    "template": "El cliente pidió productos no disponibles.\n\nNo vendemos: {{invalids}}\n\n- decilo natural\n- ofrecé alternativas reales\n- cerrá con pregunta simple\n\nProductos disponibles:\n{{productos}}",
+    "params": ["invalids", "productos"]
+  },
+  "PRICE": {
+    "template": "El cliente pidió precios.\n\n- listá productos con precio\n- cerrá con pregunta de elección\n- máximo 2 líneas",
+    "params": []
+  },
+  "OFFER": {
+    "template": "El cliente está explorando.\n\n- ofrecé simple, eucalipto o premium\n- guiá decisión",
+    "params": []
+  },
+  "CONFIRM": {
+    "template": "El cliente está listo.\n\n- confirmá pedido\n- mencioná total: {{total}}\n- pedí confirmación",
+    "params": ["total"]
+  },
+  "PAYMENT": {
+    "template": "El cliente quiere pagar.\n\n- decí total: {{total}}\n- dar alias: {{alias}}\n- cerrar",
+    "params": ["total", "alias"]
+  }
+}

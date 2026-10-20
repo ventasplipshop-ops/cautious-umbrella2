@@ -1,0 +1,56 @@
+{
+  "libro": "Reglas de Calidad",
+  "id": "quality_rules",
+  "version": "1.0.0",
+
+  "proposito": "Define exclusivamente los criterios generales de calidad narrativa y lógica de una aventura.",
+
+  "naturaleza": "calidad",
+
+  "reglas": [
+    {
+      "id": "DECISION_HAS_CONSEQUENCES",
+      "descripcion": "Una decisión debe producir consecuencias dentro de la aventura."
+    },
+
+    {
+      "id": "DECISION_NOT_FALSE",
+      "descripcion": "No deben existir decisiones falsas donde opciones diferentes conduzcan inmediatamente al mismo resultado."
+    },
+
+    {
+      "id": "EDUCATIONAL_ERROR_NOT_BLOCKING",
+      "descripcion": "Un error educativo no debe bloquear permanentemente al jugador."
+    },
+
+    {
+      "id": "SATISFACTORY_ENDING_EXISTS",
+      "descripcion": "La aventura debe contener al menos un final satisfactorio."
+    },
+
+    {
+      "id": "SECRET_ENDING_REQUIRES_HISTORY",
+      "descripcion": "Un final secreto debe depender de decisiones, condiciones o acciones anteriores."
+    },
+
+    {
+      "id": "VARIABLE_USED",
+      "descripcion": "Toda variable declarada debe tener una función dentro de la aventura."
+    },
+
+    {
+      "id": "RESOURCE_USED",
+      "descripcion": "Todo recurso declarado debe utilizarse dentro de la aventura."
+    },
+
+    {
+      "id": "CHALLENGE_NOT_REPEATED",
+      "descripcion": "No deben repetirse challenges idénticos consecutivamente."
+    },
+
+    {
+      "id": "BROTHERS_MODE_COOPERATIVE",
+      "descripcion": "Cuando una aventura utilice Modo Hermanos debe existir cooperación real entre los jugadores."
+    }
+  ]
+}

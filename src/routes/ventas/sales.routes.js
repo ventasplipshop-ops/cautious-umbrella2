@@ -15,8 +15,29 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'items required' });
   }
 
+  const client = await pool.connect();
+
   try {
-    const { rows } = await pool.query(
+    await client.query('BEGIN');
+
+    // 🔥 CONTEXTO (CLAVE)
+    await client.query(
+      `select set_config('app.company_id', $1, true)`,
+      [req.user.company_id]
+    );
+
+    await client.query(
+      `select set_config('app.current_role', $1, true)`,
+      [req.user.role]
+    );
+
+    await client.query(
+      `select set_config('app.user_id', $1, true)`,
+      [req.user.user_id]
+    );
+
+    // 🔥 crear venta
+    const { rows } = await client.query(
       `select tenant.create_sale($1, $2, $3) as sale_id`,
       [
         req.user.company_id,
@@ -25,32 +46,207 @@ router.post('/', async (req, res) => {
       ]
     );
 
+    await client.query('COMMIT');
+
     res.status(201).json({ sale_id: rows[0].sale_id });
+
   } catch (err) {
-      console.error('CREATE SALE ERROR:', err);
+    await client.query('ROLLBACK');
 
-      // errores de negocio desde SQL
-      if (err.message?.includes('insufficient stock')) {
-        return res.status(400).json({
-          error: 'insufficient_stock',
-          detail: err.message
-        });
-      }
+    console.error('CREATE SALE ERROR:', err);
 
-      if (err.message?.includes('product not found')) {
-        return res.status(404).json({
-          error: 'product_not_found',
-          detail: err.message
-        });
-      }
-
-      res.status(500).json({
-        error: 'internal_error',
+    if (err.message?.includes('insufficient stock')) {
+      return res.status(400).json({
+        error: 'insufficient_stock',
         detail: err.message
       });
     }
 
+    if (err.message?.includes('product not found')) {
+      return res.status(404).json({
+        error: 'product_not_found',
+        detail: err.message
+      });
+    }
+
+    res.status(500).json({
+      error: 'internal_error',
+      detail: err.message
+    });
+
+  } finally {
+    client.release();
+  }
 });
+
+
+/**
+ * Confirmar venta (caja)
+ */
+router.post('/:id/confirm', async (req, res) => {
+  try {
+    const client = await pool.connect();
+
+    try {
+      await client.query('BEGIN');
+
+      // 🔥 CONTEXTO (igual que create_sale)
+      await client.query(
+        `select set_config('app.company_id', $1, true)`,
+        [req.user.company_id]
+      );
+
+      await client.query(
+        `select set_config('app.current_role', $1, true)`,
+        [req.user.role]
+      );
+
+      await client.query(
+        `select set_config('app.user_id', $1, true)`,
+        [req.user.user_id]
+      );
+
+      // 🔥 llamar función
+      await client.query(
+        `select tenant.confirm_sale($1, $2)`,
+        [
+          req.user.company_id,
+          req.params.id
+        ]
+      );
+
+      await client.query('COMMIT');
+
+      res.json({ ok: true });
+
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
+
+  } catch (err) {
+
+    if (err.message?.includes('forbidden')) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+
+    console.error('CONFIRM SALE ERROR:', err);
+
+    res.status(500).json({
+      error: 'internal_error',
+      detail: err.message
+    });
+  }
+});
+
+
+/**
+ * Listar ventas pendientes
+ */
+router.get('/pending', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `
+      select *
+      from tenant.sales
+      where company_id = $1
+        and status = 'pending'
+      order by created_at desc
+      `,
+      [req.user.company_id]
+    );
+
+    res.json(rows);
+
+  } catch (err) {
+    console.error('LIST PENDING SALES ERROR:', err);
+    res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+
+/**
+ * Listar ventas confirmadas
+ */
+router.get('/confirmed', async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `
+      select *
+      from tenant.sales
+      where company_id = $1
+        and status = 'confirmed'
+      order by created_at desc
+      `,
+      [req.user.company_id]
+    );
+
+    res.json(rows);
+
+  } catch (err) {
+    console.error('LIST CONFIRMED SALES ERROR:', err);
+    res.status(500).json({ error: 'internal_error' });
+  }
+});
+
+
+
+/**
+ * Cancelar venta
+ */
+router.post('/:id/cancel', async (req, res) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    await client.query(
+      `select set_config('app.company_id', $1, true)`,
+      [req.user.company_id]
+    );
+
+    await client.query(
+      `select set_config('app.current_role', $1, true)`,
+      [req.user.role]
+    );
+
+    await client.query(
+      `select set_config('app.user_id', $1, true)`,
+      [req.user.user_id]
+    );
+
+    await client.query(
+      `select tenant.cancel_sale($1, $2)`,
+      [req.user.company_id, req.params.id]
+    );
+
+    await client.query('COMMIT');
+
+    res.json({ ok: true });
+
+  } catch (err) {
+    await client.query('ROLLBACK');
+
+    if (err.message?.includes('forbidden')) {
+      return res.status(403).json({ error: 'forbidden' });
+    }
+
+    console.error('CANCEL SALE ERROR:', err);
+
+    res.status(500).json({
+      error: 'internal_error',
+      detail: err.message
+    });
+
+  } finally {
+    client.release();
+  }
+});
+
+
+
 //ver todas las ventas
 
 /**

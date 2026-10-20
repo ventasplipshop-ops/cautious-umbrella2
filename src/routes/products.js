@@ -4,6 +4,8 @@ import { pool } from '../db/pool.js';
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { r2 } from "../lib/r2.js";
+import crypto from "crypto";
+import { enqueueAIJob } from '../services_POS/aiBackground.js';
 
 
 const router = express.Router();
@@ -14,43 +16,72 @@ router.use(authMiddleware);
  * POST /api/products
  * Crear producto (mínimo)
  */
-router.post('/',  async (req, res) => {
+router.post('/', async (req, res) => {
   const { name, price, stock } = req.body;
 
-  if (!name || price === undefined) {
-    return res.status(400).json({
-      error: 'invalid payload',
-      detail: 'name y price son obligatorios'
-    });
-  }
-
   try {
-    const { rows } = await pool.query(
-      `select * from tenant.create_product($1, $2, $3, $4)`,
-      [
-        req.user.company_id,
-        name,
-        price,
-        stock
-      ]
-    );
+    const { name, price, stock, metadata } = req.body;
 
-    res.status(201).json(rows[0]);
+  const { rows } = await pool.query(
+    `
+    select * from tenant.create_product(
+      $1::uuid,
+      $2::text,
+      $3::numeric,
+      $4::integer,
+      $5::jsonb
+    )
+    `,
+    [
+      req.user.company_id,
+      name,
+      price,
+      stock ?? 0,
+      metadata ?? {}
+    ]
+  );
+
+    const product = rows[0];
+
+    // 🔥 DISPARO EN SEGUNDO PLANO (NO BLOQUEA)
+    enqueueAIJob(product, req.user.company_id);
+
+    // 🔥 RESPUESTA INMEDIATA
+    res.status(201).json(product);
+
   } catch (err) {
     console.error('CREATE PRODUCT ERROR:', err);
     res.status(500).json({ error: 'internal error' });
   }
 });
 
-/**
+/** 
  * GET /api/products
  * Listar productos
  */
-router.get('/',  async (req, res) => {
+router.get('/', async (req, res) => {
   const onlyActive = req.query.active === 'true';
+  const client = await pool.connect();
 
   try {
-    const { rows } = await pool.query(
+    await client.query('BEGIN');
+
+    await client.query(
+      `select set_config('app.company_id', $1, true)`,
+      [req.user.company_id]
+    );
+
+    await client.query(
+      `select set_config('app.current_role', $1, true)`,
+      [req.user.role]
+    );
+
+    await client.query(
+      `select set_config('app.user_id', $1, true)`,
+      [req.user.user_id]
+    );
+
+    const { rows } = await client.query(
       `select * from tenant.list_products($1, $2)`,
       [
         req.user.company_id,
@@ -58,10 +89,18 @@ router.get('/',  async (req, res) => {
       ]
     );
 
+    await client.query('COMMIT');
     res.json(rows);
+
   } catch (err) {
+    await client.query('ROLLBACK');
     console.error('LIST PRODUCTS ERROR:', err);
-    res.status(500).json({ error: 'internal error' });
+    res.status(500).json({
+      error: 'internal_error',
+      detail: err.message
+    });
+  } finally {
+    client.release();
   }
 });
 
@@ -159,24 +198,59 @@ router.put('/:id/adjust', async (req, res) => {
   const { quantity, reason } = req.body;
 
   if (quantity === undefined) {
-    return res.status(400).json({ error: 'quantity required' });
+    return res.status(400).json({
+      error: 'quantity required'
+    });
   }
 
+  const client = await pool.connect();
+
   try {
-    await pool.query(
-      `select tenant.adjust_stock($1, $2, $3, $4)`,
+    await client.query('BEGIN');
+
+    await client.query(
+      `select set_config('app.company_id', $1, true)`,
+      [req.user.company_id]
+    );
+
+    await client.query(
+      `select set_config('app.current_role', $1, true)`,
+      [req.user.role]
+    );
+
+    await client.query(
+      `select set_config('app.user_id', $1, true)`,
+      [req.user.user_id]
+    );
+
+    await client.query(
+      `select tenant.adjust_stock($1,$2,$3,$4)`,
       [
         req.user.company_id,
         req.params.id,
-        quantity,
-        reason || null
+        Number(quantity),
+        reason || 'purchase'
       ]
     );
 
+    await client.query('COMMIT');
+
     res.json({ ok: true });
+
   } catch (err) {
-    console.error('ADJUST STOCK ERROR:', err);
-    res.status(500).json({ error: 'internal error' });
+
+    await client.query('ROLLBACK');
+
+    console.error('ADJUST STOCK ERROR FULL:', err);
+
+    res.status(500).json({
+      error: err.message,
+      code: err.code,
+      detail: err.detail
+    });
+
+  } finally {
+    client.release();
   }
 });
 
@@ -252,7 +326,7 @@ router.post("/:id/upload-url", async (req, res) => {
 
 
     const uploadUrl = await getSignedUrl(r2, command, {
-      expiresIn: 60, // 1 minuto
+      expiresIn: 300, // 1 minuto
     });
 
     const publicUrl = `${process.env.R2_PUBLIC_URL}/${key}`;
@@ -265,7 +339,7 @@ router.post("/:id/upload-url", async (req, res) => {
 
   } catch (err) {
     console.error("SIGNED URL ERROR:", err);
-    res.status(500).json({ error: "internal_error" });
+    res.status(500).json({ error: "internal_error", message: err.message});
   }
 });
 

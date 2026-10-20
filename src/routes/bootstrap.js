@@ -157,4 +157,101 @@ router.post('/company', async (req, res) => {
   }
 });
 
+
+
+// =====================================================
+// LISTAR EMPRESAS
+// GET /api/bootstrap/companies
+// =====================================================
+router.get('/companies', async (req, res) => {
+  try {
+
+    const { rows } = await pool.query(`
+      select *
+      from tenant.list_companies()
+    `);
+
+    return res.json(rows);
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+      error: 'internal_error',
+      message: err.message
+    });
+
+  }
+});
+
+
+// =====================================================
+// DETALLE EMPRESA
+// GET /api/bootstrap/company/:id
+// =====================================================
+router.get('/company/:id', async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    const { rows } = await pool.query(
+      `
+      select tenant.get_company($1) as company
+      `,
+      [id]
+    );
+
+    return res.json(
+      rows[0]?.company || null
+    );
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+      error: 'internal_error',
+      message: err.message
+    });
+
+  }
+});
+
+
+// =====================================================
+// DESACTIVAR EMPRESA
+// POST /api/bootstrap/company/:id/disable
+// =====================================================
+router.post('/company/:id/disable', async (req, res) => {
+  try {
+
+    const { id } = req.params;
+
+    await pool.query(
+      `
+      select tenant.disable_company($1)
+      `,
+      [id]
+    );
+
+    return res.json({
+      success: true
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    return res.status(500).json({
+      error: 'internal_error',
+      message: err.message
+    });
+
+  }
+});
+
+
+
+
 export default router;

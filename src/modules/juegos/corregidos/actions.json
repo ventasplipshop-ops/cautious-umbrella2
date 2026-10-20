@@ -1,0 +1,143 @@
+{
+  "libro": "Diccionario de Acciones",
+  "id": "actions",
+  "version": "1.1.0",
+
+  "proposito": "Define las acciones que un cassette puede ejecutar sobre variables declaradas.",
+
+  "definiciones": {
+    "sumar": {
+      "descripcion": "Incrementa el valor de una variable numérica.",
+
+      "campos": {
+        "tipo": {
+          "tipo": "string",
+          "constante": "sumar"
+        },
+        "variable": {
+          "tipo": "reference",
+          "referencia": "cassette.variables.id",
+          "tipos_variable_permitidos": [
+            "number"
+          ]
+        },
+        "valor": {
+          "tipo": "number"
+        }
+      },
+
+      "obligatorios": [
+        "tipo",
+        "variable",
+        "valor"
+      ],
+
+      "campos_adicionales": false,
+
+      "ejemplo": {
+        "tipo": "sumar",
+        "variable": "energia",
+        "valor": 100
+      }
+    },
+
+    "restar": {
+      "descripcion": "Reduce el valor de una variable numérica.",
+
+      "campos": {
+        "tipo": {
+          "tipo": "string",
+          "constante": "restar"
+        },
+        "variable": {
+          "tipo": "reference",
+          "referencia": "cassette.variables.id",
+          "tipos_variable_permitidos": [
+            "number"
+          ]
+        },
+        "valor": {
+          "tipo": "number"
+        }
+      },
+
+      "obligatorios": [
+        "tipo",
+        "variable",
+        "valor"
+      ],
+
+      "campos_adicionales": false,
+
+      "ejemplo": {
+        "tipo": "restar",
+        "variable": "oxigeno",
+        "valor": 20
+      }
+    },
+
+    "asignar": {
+      "descripcion": "Reemplaza el valor actual de una variable.",
+
+      "campos": {
+        "tipo": {
+          "tipo": "string",
+          "constante": "asignar"
+        },
+        "variable": {
+          "tipo": "reference",
+          "referencia": "cassette.variables.id"
+        },
+        "valor": {
+          "tipo": "dynamic",
+          "tipo_desde": "variable.tipo"
+        }
+      },
+
+      "obligatorios": [
+        "tipo",
+        "variable",
+        "valor"
+      ],
+
+      "campos_adicionales": false,
+
+      "ejemplos": [
+        {
+          "tipo": "asignar",
+          "variable": "ayudo_robot",
+          "valor": true
+        },
+        {
+          "tipo": "asignar",
+          "variable": "energia",
+          "valor": 50
+        },
+        {
+          "tipo": "asignar",
+          "variable": "equipo",
+          "valor": "azul"
+        }
+      ]
+    }
+  },
+
+  "reglas": [
+    {
+      "id": "ACTION_REGISTERED",
+      "descripcion": "Toda acción debe corresponder a una definición registrada en este libro."
+    },
+    {
+      "id": "ACTION_NO_CODE",
+      "descripcion": "Ningún campo de una acción puede contener código ejecutable o expresiones que deban evaluarse como código."
+    },
+    {
+      "id": "ACTION_VARIABLE_EXISTS",
+      "descripcion": "Toda variable utilizada por una acción debe existir en cassette.variables."
+    },
+    {
+      "id": "ACTION_VALUE_COMPATIBLE",
+      "descripcion": "El valor utilizado por una acción debe ser compatible con el tipo requerido por la definición de la acción."
+    }
+  ]
+}

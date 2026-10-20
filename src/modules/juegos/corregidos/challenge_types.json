@@ -1,0 +1,66 @@
+{
+  "libro": "Diccionario de Tipos de Challenge",
+  "id": "challenge_types",
+  "version": "1.0.0",
+
+  "proposito": "Define exclusivamente los tipos de challenge disponibles para una actividad educativa.",
+
+  "naturaleza": "contrato",
+
+  "definiciones": {
+    "preguntas": {
+      "descripcion": "Challenge basado en preguntas que el jugador debe responder."
+    },
+
+    "seleccion": {
+      "descripcion": "Challenge basado en seleccionar una respuesta o elemento."
+    },
+
+    "ordenar": {
+      "descripcion": "Challenge basado en colocar elementos en un orden correcto."
+    },
+
+    "relacionar": {
+      "descripcion": "Challenge basado en establecer relaciones entre elementos."
+    },
+
+    "clasificar": {
+      "descripcion": "Challenge basado en distribuir elementos entre categorías."
+    },
+
+    "completar": {
+      "descripcion": "Challenge basado en completar información faltante."
+    },
+
+    "verdadero_falso": {
+      "descripcion": "Challenge basado en determinar si una afirmación es verdadera o falsa."
+    },
+
+    "memoria": {
+      "descripcion": "Challenge basado en recordar y reconocer información."
+    },
+
+    "secuencia": {
+      "descripcion": "Challenge basado en reconocer o completar una secuencia."
+    },
+
+    "identificar": {
+      "descripcion": "Challenge basado en reconocer correctamente un elemento."
+    },
+
+    "construir": {
+      "descripcion": "Challenge basado en formar una respuesta mediante elementos disponibles."
+    },
+
+    "cooperativo": {
+      "descripcion": "Challenge diseñado para requerir participación cooperativa."
+    }
+  },
+
+  "reglas": [
+    {
+      "id": "CHALLENGE_TYPE_REGISTERED",
+      "descripcion": "Todo tipo de challenge utilizado debe existir en definiciones."
+    }
+  ]
+}

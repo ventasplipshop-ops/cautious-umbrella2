@@ -1,0 +1,27 @@
+export const calls = {
+  listarOperaciones: "SELECT reciclaje2.listar_operaciones($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) AS data",
+  obtenerOperacion: "SELECT reciclaje2.obtener_operacion($1,$2) AS data",
+  listarSalidas: "SELECT reciclaje2.listar_salidas($1,$2,$3,$4,$5,$6,$7,$8) AS data",
+  obtenerSalida: "SELECT reciclaje2.obtener_salida($1,$2) AS data",
+  listarCaja: "SELECT reciclaje2.listar_movimientos_caja($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) AS data",
+  listarGastos: "SELECT reciclaje2.listar_gastos($1,$2,$3,$4,$5,$6,$7,$8,$9) AS data",
+  listarPresupuestosGastos: "SELECT reciclaje2.listar_presupuestos_gastos($1,$2) AS data",
+  upsertPresupuestoGasto: "SELECT reciclaje2.upsert_presupuesto_gasto($1,$2,$3,$4) AS data",
+  resumen: "SELECT reciclaje2.obtener_resumen_operativo($1,$2) AS data",
+  inventario: "SELECT reciclaje2.listar_inventario($1,$2,$3,$4,$5) AS data",
+  movimientosStock: "SELECT reciclaje2.listar_movimientos_stock($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) AS data",
+  finanzas: "SELECT reciclaje2.listar_finanzas($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) AS data",
+  estadoFinanza: "SELECT reciclaje2.obtener_estado_finanza($1,$2) AS data",
+  catalogos: "SELECT reciclaje2.listar_catalogos($1) AS data",
+  socios: "SELECT reciclaje2.buscar_socios($1,$2,$3,$4,$5,$6,$7) AS data",
+  transportistas: "SELECT reciclaje2.buscar_transportistas($1,$2,$3,$4,$5) AS data",
+  materiales: "SELECT reciclaje2.buscar_materiales($1,$2,$3,$4,$5,$6,$7) AS data",
+  depositos: "SELECT reciclaje2.listar_depositos($1,$2,$3) AS data",
+  precios: "SELECT reciclaje2.listar_precios_socio($1,$2,$3) AS data",
+  configuracion: "SELECT reciclaje2.upsert_configuracion($1,$2,$3,$4::jsonb) AS data",
+  operacion: "SELECT reciclaje2.orquestar_operacion($1,$2,$3,$4::jsonb) AS data",
+  dinero: "SELECT reciclaje2.orquestar_dinero($1,$2,$3,$4::jsonb) AS data",
+  inventarioAccion: "SELECT reciclaje2.orquestar_inventario($1,$2,$3,$4::jsonb) AS data",
+  finanzasAccion: "SELECT reciclaje2.orquestar_finanzas($1,$2,$3,$4::jsonb) AS data"
+};
+export function createSqlService(db) { return Object.fromEntries(Object.entries(calls).map(([name,text])=>[name,async(...params)=>{const {rows}=await db.query(text,params);return rows[0]?.data??null;} ])); }

@@ -1,0 +1,48 @@
+{
+  "libro": "Diccionario de Operadores de Condición",
+  "id": "condition_operators",
+  "version": "1.0.0",
+
+  "proposito": "Define exclusivamente los operadores disponibles para evaluar condiciones.",
+
+  "naturaleza": "contrato",
+
+  "definiciones": {
+    "igual": {
+      "valor": "==",
+      "descripcion": "Comprueba si dos valores son iguales."
+    },
+
+    "distinto": {
+      "valor": "!=",
+      "descripcion": "Comprueba si dos valores son diferentes."
+    },
+
+    "mayor": {
+      "valor": ">",
+      "descripcion": "Comprueba si el valor de la variable es mayor que el valor comparado."
+    },
+
+    "menor": {
+      "valor": "<",
+      "descripcion": "Comprueba si el valor de la variable es menor que el valor comparado."
+    },
+
+    "mayor_igual": {
+      "valor": ">=",
+      "descripcion": "Comprueba si el valor de la variable es mayor o igual que el valor comparado."
+    },
+
+    "menor_igual": {
+      "valor": "<=",
+      "descripcion": "Comprueba si el valor de la variable es menor o igual que el valor comparado."
+    }
+  },
+
+  "reglas": [
+    {
+      "id": "CONDITION_OPERATOR_REGISTERED",
+      "descripcion": "Toda condición debe utilizar un operador registrado en este libro."
+    }
+  ]
+}

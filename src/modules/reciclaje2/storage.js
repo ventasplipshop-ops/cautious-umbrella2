@@ -1,0 +1,11 @@
+import { Router } from "express";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import crypto from "crypto";
+const router=Router();
+const dir="/home/edwin/storage/reciclaje2/materiales";
+fs.mkdirSync(dir,{recursive:true});
+const upload=multer({storage:multer.diskStorage({destination:(q,f,cb)=>cb(null,dir),filename:(q,f,cb)=>cb(null,`${crypto.randomUUID()}${path.extname(f.originalname).toLowerCase()}`)}),limits:{fileSize:5*1024*1024},fileFilter:(q,f,cb)=>{if(!["image/jpeg","image/png","image/webp"].includes(f.mimetype))return cb(new Error("Solo se permiten imágenes JPG, PNG o WEBP."));cb(null,true);}});
+router.post("/materiales",upload.single("imagen"),(q,r)=>{if(!q.file)return r.status(400).json({error:"Debe enviar una imagen."});r.status(201).json({filename:q.file.filename,imagen_url:`/storage/reciclaje2/materiales/${q.file.filename}`});});
+export default router;

@@ -1,0 +1,37 @@
+{
+  "libro": "Reglas de Ritmo Educativo",
+  "id": "educational_pacing",
+  "version": "1.0.0",
+
+  "proposito": "Define exclusivamente los criterios de frecuencia e integración de challenges dentro de una aventura.",
+
+  "naturaleza": "calidad",
+
+  "principio": "Los challenges deben aparecer regularmente sin convertir cada transición narrativa en un ejercicio.",
+
+  "configuracion": {
+    "max_nodos_sin_challenge": 2
+  },
+
+  "reglas": [
+    {
+      "id": "CHALLENGE_NOT_REQUIRED_EVERY_NODE",
+      "descripcion": "No es obligatorio que todos los nodos contengan un challenge."
+    },
+
+    {
+      "id": "CHALLENGE_MAX_GAP",
+      "descripcion": "No deben existir más nodos consecutivos sin challenge que el máximo definido en configuracion.max_nodos_sin_challenge."
+    },
+
+    {
+      "id": "CHALLENGE_NARRATIVE_EXCEPTION",
+      "descripcion": "La estructura narrativa puede justificar excepciones puntuales al ritmo educativo."
+    },
+
+    {
+      "id": "CHALLENGE_NARRATIVE_INTEGRATION",
+      "descripcion": "Los challenges deben integrarse al ritmo de la aventura y no utilizarse como interrupciones arbitrarias."
+    }
+  ]
+}

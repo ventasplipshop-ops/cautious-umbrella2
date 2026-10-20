@@ -1,0 +1,200 @@
+API="http://localhost:3000/api"
+COMPANY_SLUG="edwin"   # cambia si corresponde
+EMAIL="edwin@otra.com"
+PASSWORD="1234"
+
+LOGIN_RESPONSE=$(curl -s -X POST $API/auth/login \
+  -H "Content-Type: application/json" \
+  -d "{
+    \"company_slug\": \"$COMPANY_SLUG\",
+    \"email\": \"$EMAIL\",
+    \"password\": \"$PASSWORD\"
+  }")
+
+echo $LOGIN_RESPONSE
+
+
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNDA1ODgwNTQtODE4Ny00MTA2LTk0MDQtYTMxYzgxMDg3NmEyIiwiY29tcGFueV9pZCI6ImMyNGMzNGU4LTY2NjktNDI4Ni1hNTMxLTUyNzkxMjlkZWQzNyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3MzA2OTkwNywiZXhwIjoxNzczMDk4NzA3fQ.vVjJ-Pa8TF0nkH37wJfWd7qMwuWxFfPg_7zow3Ll3Sg
+
+
+
+select id, name, position
+from tenant.crm_stages
+where company_id = 'c24c34e8-6669-4286-a531-5279129ded37'
+order by position;
+
+
+
+STAGE_ID="993f9ef6-48a3-4a27-a7ac-d5facff58a43"
+
+CREATE OR REPLACE FUNCTION tenant.bootstrap_company(p_bootstrap_key text, p_company_name text, p_company_slug text, p_admin_email text, p_admin_password text, p_admin_nombre text)+
+  RETURNS TABLE(company_id uuid, user_id uuid)                                                                                                                                      +
+  LANGUAGE plpgsql                                                                                                                                                                  +
+  SECURITY DEFINER                                                                                                                                                                  +
+ AS $function$\r                                                                                                                                                                    +
+ declare\r                                                                                                                                                                          +
+   v_company_id uuid;\r                                                                                                                                                             +
+   v_user_id uuid;\r                                                                                                                                                                +
+   v_expected_key text;\r                                                                                                                                                           +
+ begin\r                                                                                                                                                                            +
+   -- 🔐 leer clave esperada desde config\r                                                                                                                                          +
+   v_expected_key := current_setting('app.bootstrap_key', true);\r                                                                                                                  +
+ \r                                                                                                                                                                                 +
+   if v_expected_key is null or v_expected_key <> p_bootstrap_key then\r                                                                                                            +
+     raise exception 'invalid bootstrap key';\r                                                                                                                                     +
+   end if;\r                                                                                                                                                                        +
+ \r                                                                                                                                                                                 +
+   insert into tenant.companies (name, slug)\r                                                                                                                                      +
+   values (p_company_name, p_company_slug)\r                                                                                                                                        +
+   returning id into v_company_id;\r                                                                                                                                                +
+ \r                                                                                                                                                                                 +
+   insert into tenant.users (\r                                                                                                                                                     +
+     company_id,\r                                                                                                                                                                  +
+     email,\r                                                                                                                                                                       +
+     password,\r                                                                                                                                                                    +
+     nombre,\r                                                                                                                                                                      +
+     tipo_usuario\r                                                                                                                                                                 +
+   )\r                                                                                                                                                                              +
+   values (\r                                                                                                                                                                       +
+     v_company_id,\r                                                                                                                                                                +
+     p_admin_email,\r                                                                                                                                                               +
+     p_admin_password,\r                                                                                                                                                            +
+     p_admin_nombre,\r
+     'admin'\r                                                                                                                                                                      +
+   )\r                                                                                                                                                                              +
+   returning id into v_user_id;\r                                                                                                                                                   +
+ \r                                                                                                                                                                                 +
+   return query\r                                                                                                                                                                   +
+   select v_company_id, v_user_id;\r                                                                                                                                                +
+ end;\r                                                                                                                                                                             +
+ $function$                                                                                                                                                                         +
+ 
+
+
+ CREATE OR REPLACE FUNCTION tenant.bootstrap_demo_company()      +
+  RETURNS TABLE(company_id uuid, user_id uuid)                   +
+  LANGUAGE plpgsql                                               +
+  SECURITY DEFINER                                               +
+ AS $function$                                                   +
+ declare                                                         +
+   v_company_id uuid;                                            +
+   v_user_id uuid;                                               +
+   v_slug text := 'demo_' || substr(gen_random_uuid()::text,1,8);+
+   v_now timestamptz := now();                                   +
+   v_active_demos int;                                           +
+ begin                                                           +
+                                                                 +
+   perform set_config('search_path', 'tenant, public', true);    +
+                                                                 +
+   -- 🔥 1️⃣ Contar demos activas                                   +
+   select count(*)::int                                          +
+   into v_active_demos                                           +
+   from tenant.companies                                         +
+   where is_demo = true                                          +
+     and demo_expires_at > now();                                +
+                                                                 +
+   if v_active_demos >= 10 then                                  +
+     raise exception 'demo_capacity_reached'                     +
+       using errcode = 'P0001';                                  +
+   end if;                                                       +
+                                                                 +
+   -- 2️⃣ Crear empresa demo                                       +
+   insert into tenant.companies(                                 +
+     name,                                                       +
+     slug,                                                       +
+     is_demo,                                                    +
+     demo_expires_at                                             +
+   )                                                             +
+   values (                                                                                                            +
+     'Demo Company',                                             +
+     v_slug,                                                     +
+     true,                                                       +
+     v_now + interval '30 minutes'                               +
+   )                                                             +
+   returning id into v_company_id;                               +
+                                                                 +
+   -- 3️⃣ Crear usuario admin demo                                 +
+   insert into tenant.users(                                     +
+     company_id,                                                 +
+     email,                                                      +
+     password,                                                   +
+     nombre,                                                     +
+     tipo_usuario                                                +
+   )                                                             +
+   values (                                                      +
+     v_company_id,                                               +
+     v_slug || '@demo.local',                                    +
+     crypt(gen_random_uuid()::text, gen_salt('bf')),             +
+     'Demo',                                                     +
+     'admin'                                                     +
+   )                                                             +
+   returning id into v_user_id;                                  +
+                                                                 +
+   return query                                                  +
+   select v_company_id, v_user_id;                               +
+                                                                 +
+ end;                                                            +
+ $function$
+
+
+
+
+
+
+
+
+ CREATE OR REPLACE FUNCTION tenant.cash_closing_report(
+    p_company_id uuid,
+    p_date date DEFAULT CURRENT_DATE
+) RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_role text;
+BEGIN
+    -- Configurar contexto
+    PERFORM set_config('search_path', 'tenant, public', true);
+    PERFORM set_config('row_security', 'off', true);
+
+    v_role := current_setting('app.current_role', true);
+
+    -- Solo administradores y supervisores
+    IF v_role NOT IN ('admin', 'supervisor') THEN
+        RAISE EXCEPTION 'forbidden';
+    END IF;
+
+    RETURN (
+        SELECT COALESCE(jsonb_agg(row_to_json(t)), '[]'::jsonb)
+        FROM (
+            SELECT
+                u.id AS user_id,
+                u.nombre AS operador,
+                u.codigo_empleado,
+                MIN(s.created_at) AS hora_ingreso,
+                MAX(s.created_at) AS hora_ultima_venta,
+                COUNT(s.id) AS total_ventas,
+                COALESCE(SUM(s.total) FILTER (
+                    WHERE s.payment_method = 'cash'
+                ), 0) AS efectivo,
+                COALESCE(SUM(s.total) FILTER (
+                    WHERE s.payment_method = 'card'
+                ), 0) AS tarjeta,
+                COALESCE(SUM(s.total) FILTER (
+                    WHERE s.payment_method = 'transfer'
+                ), 0) AS transferencia,
+                COALESCE(SUM(s.total), 0) AS total_facturado
+            FROM tenant.users u
+            LEFT JOIN tenant.sales s
+                ON s.created_by = u.id
+                AND s.company_id = p_company_id
+                AND s.created_at::date = p_date
+                AND COALESCE(s.status, 'pending') IN ('pending', 'confirmed')
+            WHERE u.company_id = p_company_id
+              AND u.tipo_usuario IN ('operador', 'supervisor', 'admin')
+            GROUP BY u.id, u.nombre, u.codigo_empleado
+        ) t
+    );
+END;
+$$;

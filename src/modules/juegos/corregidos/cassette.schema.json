@@ -1,0 +1,81 @@
+{
+  "libro": "Diccionario del Cassette",
+  "id": "cassette",
+  "version": "1.1.0",
+
+  "proposito": "Define exclusivamente la estructura raíz obligatoria de un cassette.",
+
+  "naturaleza": "contrato",
+
+  "definiciones": {
+    "cassette": {
+      "descripcion": "Contenedor raíz de una aventura.",
+
+      "campos": {
+        "schema": {
+          "tipo": "string",
+          "constante": "edu-adventure"
+        },
+
+        "schema_version": {
+          "tipo": "string",
+          "constante": "1.0.0"
+        },
+
+        "meta": {
+          "tipo": "object",
+          "definicion_externa": "metadata.definiciones.meta"
+        },
+
+        "inicio": {
+          "tipo": "reference",
+          "referencia": "nodos.id"
+        },
+
+        "variables": {
+          "tipo": "array",
+          "items": {
+            "definicion_externa": "variables.definiciones.variable"
+          }
+        },
+
+        "recursos": {
+          "tipo": "array",
+          "items": {
+            "definicion_externa": "resources.definiciones.recurso"
+          }
+        },
+
+        "nodos": {
+          "tipo": "array",
+          "items": {
+            "definicion_externa": "nodes.definiciones"
+          }
+        }
+      },
+
+      "obligatorios": [
+        "schema",
+        "schema_version",
+        "meta",
+        "inicio",
+        "variables",
+        "recursos",
+        "nodos"
+      ],
+
+      "campos_adicionales": false
+    }
+  },
+
+  "reglas": [
+    {
+      "id": "CASSETTE_STRUCTURE_CLOSED",
+      "descripcion": "El cassette solo puede contener los campos definidos por este libro."
+    },
+    {
+      "id": "CASSETTE_START_EXISTS",
+      "descripcion": "El valor de inicio debe referenciar el ID de un nodo existente."
+    }
+  ]
+}

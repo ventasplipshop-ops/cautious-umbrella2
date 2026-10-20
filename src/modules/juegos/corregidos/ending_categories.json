@@ -1,0 +1,38 @@
+{
+  "libro": "Diccionario de Categorías de Final",
+  "id": "ending_categories",
+  "version": "1.0.0",
+
+  "proposito": "Define exclusivamente las categorías disponibles para clasificar los finales de una aventura.",
+
+  "naturaleza": "catalogo",
+
+  "definiciones": {
+    "perfecto": {
+      "descripcion": "Final que representa el resultado más favorable posible."
+    },
+
+    "bueno": {
+      "descripcion": "Final con un resultado favorable."
+    },
+
+    "alternativo": {
+      "descripcion": "Final válido que resuelve la aventura de una manera diferente."
+    },
+
+    "malo": {
+      "descripcion": "Final con consecuencias desfavorables."
+    },
+
+    "secreto": {
+      "descripcion": "Final especial que requiere condiciones o decisiones previas para ser descubierto."
+    }
+  },
+
+  "reglas": [
+    {
+      "id": "ENDING_CATEGORY_REGISTERED",
+      "descripcion": "Todo final debe utilizar una categoría registrada en este libro."
+    }
+  ]
+}

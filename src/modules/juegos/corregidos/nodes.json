@@ -1,0 +1,366 @@
+{
+  "libro": "Diccionario de Nodos",
+  "id": "nodes",
+  "version": "1.0.0",
+
+  "proposito": "Define exclusivamente los tipos de nodo permitidos y la estructura de cada uno.",
+
+  "naturaleza": "contrato",
+
+  "definiciones": {
+    "historia": {
+      "descripcion": "Nodo narrativo utilizado para presentar historia, diálogos, lugares, personajes o consecuencias.",
+
+      "campos": {
+        "id": {
+          "tipo": "string"
+        },
+
+        "tipo": {
+          "tipo": "string",
+          "constante": "historia"
+        },
+
+        "titulo": {
+          "tipo": "string"
+        },
+
+        "texto": {
+          "tipo": "string"
+        },
+
+        "recurso_id": {
+          "tipo": "reference_nullable",
+          "referencia": "cassette.recursos.id"
+        },
+
+        "acciones": {
+          "tipo": "array",
+          "items": {
+            "definicion_externa": "actions.definiciones"
+          }
+        },
+
+        "challenge": {
+          "tipo": "object_nullable",
+          "definicion_externa": "challenges.definiciones.challenge"
+        },
+
+        "siguiente": {
+          "tipo": "reference",
+          "referencia": "cassette.nodos.id"
+        }
+      },
+
+      "obligatorios": [
+        "id",
+        "tipo",
+        "titulo",
+        "texto",
+        "recurso_id",
+        "acciones",
+        "siguiente"
+      ],
+
+      "campos_adicionales": false
+    },
+
+    "decision": {
+      "descripcion": "Nodo que permite al jugador elegir entre diferentes caminos.",
+
+      "campos": {
+        "id": {
+          "tipo": "string"
+        },
+
+        "tipo": {
+          "tipo": "string",
+          "constante": "decision"
+        },
+
+        "titulo": {
+          "tipo": "string"
+        },
+
+        "texto": {
+          "tipo": "string"
+        },
+
+        "opciones": {
+          "tipo": "array",
+          "min": 2,
+          "max": 4,
+          "items": {
+            "definicion": "opcion"
+          }
+        },
+
+        "challenge": {
+          "tipo": "object_nullable",
+          "definicion_externa": "challenges.definiciones.challenge"
+        }
+      },
+
+      "obligatorios": [
+        "id",
+        "tipo",
+        "titulo",
+        "texto",
+        "opciones"
+      ],
+
+      "campos_adicionales": false
+    },
+
+    "opcion": {
+      "descripcion": "Opción disponible dentro de un nodo de decisión.",
+
+      "campos": {
+        "id": {
+          "tipo": "string"
+        },
+
+        "texto": {
+          "tipo": "string"
+        },
+
+        "siguiente": {
+          "tipo": "reference",
+          "referencia": "cassette.nodos.id"
+        }
+      },
+
+      "obligatorios": [
+        "id",
+        "texto",
+        "siguiente"
+      ],
+
+      "campos_adicionales": false
+    },
+
+    "desafio": {
+      "descripcion": "Nodo dedicado exclusivamente a ejecutar un challenge como acontecimiento propio de la aventura.",
+
+      "campos": {
+        "id": {
+          "tipo": "string"
+        },
+
+        "tipo": {
+          "tipo": "string",
+          "constante": "desafio"
+        },
+
+        "titulo": {
+          "tipo": "string"
+        },
+
+        "challenge": {
+          "tipo": "object",
+          "definicion_externa": "challenges.definiciones.challenge"
+        },
+
+        "resultado": {
+          "tipo": "object",
+          "definicion": "resultado_desafio"
+        }
+      },
+
+      "obligatorios": [
+        "id",
+        "tipo",
+        "titulo",
+        "challenge",
+        "resultado"
+      ],
+
+      "campos_adicionales": false
+    },
+
+    "resultado_desafio": {
+      "descripcion": "Define los destinos posibles después de resolver un nodo de desafío.",
+
+      "campos": {
+        "correcto": {
+          "tipo": "reference",
+          "referencia": "cassette.nodos.id"
+        },
+
+        "incorrecto": {
+          "tipo": "reference",
+          "referencia": "cassette.nodos.id"
+        }
+      },
+
+      "obligatorios": [
+        "correcto",
+        "incorrecto"
+      ],
+
+      "campos_adicionales": false
+    },
+
+    "condicion": {
+      "descripcion": "Nodo que selecciona el siguiente camino evaluando una variable.",
+
+      "campos": {
+        "id": {
+          "tipo": "string"
+        },
+
+        "tipo": {
+          "tipo": "string",
+          "constante": "condicion"
+        },
+
+        "variable": {
+          "tipo": "reference",
+          "referencia": "cassette.variables.id"
+        },
+
+        "operador": {
+          "tipo": "reference",
+          "referencia": "condition_operators.definiciones"
+        },
+
+        "valor": {
+          "tipo": "dynamic",
+          "tipo_desde": "variable.tipo"
+        },
+
+        "verdadero": {
+          "tipo": "reference",
+          "referencia": "cassette.nodos.id"
+        },
+
+        "falso": {
+          "tipo": "reference",
+          "referencia": "cassette.nodos.id"
+        }
+      },
+
+      "obligatorios": [
+        "id",
+        "tipo",
+        "variable",
+        "operador",
+        "valor",
+        "verdadero",
+        "falso"
+      ],
+
+      "campos_adicionales": false
+    },
+
+    "recompensa": {
+      "descripcion": "Nodo que presenta una recompensa y puede modificar el estado de la aventura.",
+
+      "campos": {
+        "id": {
+          "tipo": "string"
+        },
+
+        "tipo": {
+          "tipo": "string",
+          "constante": "recompensa"
+        },
+
+        "titulo": {
+          "tipo": "string"
+        },
+
+        "texto": {
+          "tipo": "string"
+        },
+
+        "acciones": {
+          "tipo": "array",
+          "items": {
+            "definicion_externa": "actions.definiciones"
+          }
+        },
+
+        "challenge": {
+          "tipo": "object_nullable",
+          "definicion_externa": "challenges.definiciones.challenge"
+        },
+
+        "siguiente": {
+          "tipo": "reference",
+          "referencia": "cassette.nodos.id"
+        }
+      },
+
+      "obligatorios": [
+        "id",
+        "tipo",
+        "titulo",
+        "texto",
+        "acciones",
+        "siguiente"
+      ],
+
+      "campos_adicionales": false
+    },
+
+    "final": {
+      "descripcion": "Nodo terminal que concluye una ruta de la aventura.",
+
+      "campos": {
+        "id": {
+          "tipo": "string"
+        },
+
+        "tipo": {
+          "tipo": "string",
+          "constante": "final"
+        },
+
+        "final_id": {
+          "tipo": "string"
+        },
+
+        "categoria": {
+          "tipo": "reference",
+          "referencia": "ending_categories.definiciones"
+        },
+
+        "titulo": {
+          "tipo": "string"
+        },
+
+        "texto": {
+          "tipo": "string"
+        },
+
+        "estrellas": {
+          "tipo": "number"
+        }
+      },
+
+      "obligatorios": [
+        "id",
+        "tipo",
+        "final_id",
+        "categoria",
+        "titulo",
+        "texto",
+        "estrellas"
+      ],
+
+      "campos_adicionales": false
+    }
+  },
+
+  "reglas": [
+    {
+      "id": "NODE_TYPE_REGISTERED",
+      "descripcion": "Todo nodo debe utilizar una definición registrada en este libro."
+    },
+    {
+      "id": "NODE_STRUCTURE_VALID",
+      "descripcion": "Todo nodo debe respetar la estructura correspondiente a su tipo."
+    }
+  ]
+}

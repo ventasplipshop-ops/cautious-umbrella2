@@ -1,0 +1,205 @@
+{
+  "libro": "Tipos de Aventura",
+  "id": "adventure_types",
+  "version": "1.1.0",
+
+  "proposito": "Define patrones narrativos recomendados para orientar la construcción de aventuras. No define la estructura técnica del cassette.",
+
+  "naturaleza": "creativa",
+
+  "definiciones": {
+    "misterio": {
+      "descripcion": "Aventura centrada en descubrir la explicación de un hecho desconocido mediante pistas, decisiones y deducción.",
+
+      "etapas_recomendadas": [
+        {
+          "id": "introduccion",
+          "descripcion": "Presentar el escenario, personajes y situación inicial."
+        },
+        {
+          "id": "evento_extrano",
+          "descripcion": "Introducir el hecho, problema o anomalía que inicia el misterio."
+        },
+        {
+          "id": "investigacion",
+          "descripcion": "Permitir descubrir pistas mediante exploración, decisiones o desafíos."
+        },
+        {
+          "id": "sospechas",
+          "descripcion": "Presentar posibles explicaciones, responsables o interpretaciones."
+        },
+        {
+          "id": "deduccion",
+          "descripcion": "Utilizar la información obtenida anteriormente para acercarse a la solución."
+        },
+        {
+          "id": "revelacion",
+          "descripcion": "Descubrir la explicación principal del misterio."
+        },
+        {
+          "id": "desenlace",
+          "descripcion": "Resolver las consecuencias y conducir a uno o varios finales."
+        }
+      ]
+    },
+
+    "exploracion": {
+      "descripcion": "Aventura centrada en descubrir lugares, rutas, secretos y obstáculos mediante el desplazamiento y la elección.",
+
+      "etapas_recomendadas": [
+        {
+          "id": "llegada",
+          "descripcion": "Presentar el lugar que será explorado."
+        },
+        {
+          "id": "eleccion_ruta",
+          "descripcion": "Ofrecer caminos o destinos diferentes."
+        },
+        {
+          "id": "descubrimiento",
+          "descripcion": "Revelar información, lugares, personajes u objetos."
+        },
+        {
+          "id": "obstaculo",
+          "descripcion": "Introducir una dificultad que afecte la exploración."
+        },
+        {
+          "id": "nueva_eleccion",
+          "descripcion": "Permitir que descubrimientos anteriores influyan en una nueva decisión."
+        },
+        {
+          "id": "secreto",
+          "descripcion": "Ofrecer un descubrimiento especial o difícil de encontrar."
+        },
+        {
+          "id": "desenlace",
+          "descripcion": "Conducir la exploración hacia uno o varios finales."
+        }
+      ]
+    },
+
+    "rescate": {
+      "descripcion": "Aventura centrada en solucionar una emergencia y alcanzar un objetivo de rescate.",
+
+      "etapas_recomendadas": [
+        {
+          "id": "emergencia",
+          "descripcion": "Presentar quién o qué necesita ser rescatado y por qué."
+        },
+        {
+          "id": "limitacion",
+          "descripcion": "Introducir tiempo, recursos u otras restricciones."
+        },
+        {
+          "id": "planificacion",
+          "descripcion": "Permitir elegir cómo abordar el rescate."
+        },
+        {
+          "id": "obstaculos",
+          "descripcion": "Presentar dificultades durante el intento."
+        },
+        {
+          "id": "rescate",
+          "descripcion": "Resolver el objetivo principal."
+        },
+        {
+          "id": "consecuencias",
+          "descripcion": "Mostrar el resultado de las decisiones tomadas durante el rescate."
+        }
+      ]
+    },
+
+    "tesoro": {
+      "descripcion": "Aventura centrada en localizar y alcanzar un objetivo oculto mediante pistas, rutas y objetos.",
+
+      "etapas_recomendadas": [
+        {
+          "id": "objetivo",
+          "descripcion": "Presentar el tesoro, objeto o lugar que debe encontrarse."
+        },
+        {
+          "id": "pistas",
+          "descripcion": "Proporcionar información que permita avanzar hacia el objetivo."
+        },
+        {
+          "id": "rutas",
+          "descripcion": "Ofrecer diferentes caminos para continuar la búsqueda."
+        },
+        {
+          "id": "objetos_clave",
+          "descripcion": "Permitir obtener llaves, herramientas u objetos necesarios o ventajosos."
+        },
+        {
+          "id": "obstaculo_final",
+          "descripcion": "Presentar la última barrera antes del objetivo."
+        },
+        {
+          "id": "descubrimiento",
+          "descripcion": "Resolver la búsqueda y determinar sus consecuencias."
+        }
+      ]
+    },
+
+    "supervivencia": {
+      "descripcion": "Aventura centrada en superar una situación peligrosa administrando decisiones y recursos.",
+
+      "etapas_recomendadas": [
+        {
+          "id": "peligro",
+          "descripcion": "Presentar la amenaza principal."
+        },
+        {
+          "id": "recursos_limitados",
+          "descripcion": "Establecer recursos, oportunidades o capacidades limitadas."
+        },
+        {
+          "id": "decisiones",
+          "descripcion": "Obligar a elegir cómo utilizar los recursos disponibles."
+        },
+        {
+          "id": "consecuencias",
+          "descripcion": "Hacer visibles los efectos de las decisiones anteriores."
+        },
+        {
+          "id": "resolucion",
+          "descripcion": "Determinar si y cómo se supera la situación."
+        }
+      ]
+    }
+  },
+
+  "combinacion": {
+    "permitida": true,
+
+    "max_tipos_recomendados": 2,
+
+    "reglas": [
+      "Un tipo debe actuar como estructura narrativa principal.",
+      "Los tipos secundarios pueden aportar elementos narrativos sin reemplazar necesariamente la estructura principal.",
+      "La combinación no obliga a utilizar todas las etapas de ambos tipos.",
+      "Las etapas pueden adaptarse, reorganizarse o combinarse cuando la coherencia narrativa lo requiera."
+    ],
+
+    "ejemplo": {
+      "tipo_principal": "misterio",
+      "tipos_secundarios": [
+        "exploracion"
+      ]
+    }
+  },
+
+  "reglas": [
+    {
+      "id": "ADVENTURE_TYPE_REGISTERED",
+      "descripcion": "Los tipos de aventura utilizados deben existir en definiciones."
+    },
+    {
+      "id": "ADVENTURE_STRUCTURE_RECOMMENDED",
+      "descripcion": "Las etapas son patrones narrativos recomendados y no una secuencia técnica obligatoria."
+    },
+    {
+      "id": "ADVENTURE_TYPES_COMBINABLE",
+      "descripcion": "Los tipos pueden combinarse respetando las reglas definidas en combinacion."
+    }
+  ]
+}

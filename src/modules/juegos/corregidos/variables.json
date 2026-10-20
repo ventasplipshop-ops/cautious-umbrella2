@@ -1,0 +1,76 @@
+{
+  "libro": "Diccionario de Variables",
+  "id": "variables",
+  "version": "1.0.0",
+
+  "proposito": "Define exclusivamente la estructura y los tipos permitidos de las variables utilizadas por un cassette.",
+
+  "naturaleza": "contrato",
+
+  "definiciones": {
+    "variable": {
+      "descripcion": "Valor de estado que puede ser consultado o modificado durante una aventura.",
+
+      "campos": {
+        "id": {
+          "tipo": "string"
+        },
+
+        "tipo": {
+          "tipo": "string",
+          "enum": [
+            "number",
+            "boolean",
+            "string"
+          ]
+        },
+
+        "inicial": {
+          "tipo": "dynamic",
+          "tipo_desde": "tipo"
+        }
+      },
+
+      "obligatorios": [
+        "id",
+        "tipo",
+        "inicial"
+      ],
+
+      "campos_adicionales": false,
+
+      "ejemplos": [
+        {
+          "id": "energia",
+          "tipo": "number",
+          "inicial": 0
+        },
+        {
+          "id": "puerta_abierta",
+          "tipo": "boolean",
+          "inicial": false
+        },
+        {
+          "id": "equipo_elegido",
+          "tipo": "string",
+          "inicial": ""
+        }
+      ]
+    }
+  },
+
+  "reglas": [
+    {
+      "id": "VARIABLE_TYPE_REGISTERED",
+      "descripcion": "Toda variable debe utilizar uno de los tipos registrados en este libro."
+    },
+    {
+      "id": "VARIABLE_INITIAL_TYPE",
+      "descripcion": "El valor inicial debe coincidir con el tipo declarado por la variable."
+    },
+    {
+      "id": "VARIABLE_IDS_UNIQUE",
+      "descripcion": "Los IDs de variables deben ser únicos dentro de un cassette."
+    }
+  ]
+}

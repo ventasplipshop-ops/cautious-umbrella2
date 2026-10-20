@@ -1,0 +1,93 @@
+{
+  "libro": "Diccionario de Recursos",
+  "id": "resources",
+  "version": "1.0.0",
+
+  "proposito": "Define exclusivamente los recursos multimedia que puede declarar un cassette.",
+
+  "naturaleza": "contrato",
+
+  "definiciones": {
+    "recurso": {
+      "descripcion": "Recurso multimedia utilizado por una aventura.",
+
+      "campos": {
+        "id": {
+          "tipo": "string"
+        },
+
+        "tipo": {
+          "tipo": "string",
+          "enum": [
+            "imagen",
+            "audio"
+          ]
+        },
+
+        "subtipo": {
+          "tipo": "dynamic_enum",
+          "enum_desde": "tipos.{tipo}.subtipos"
+        },
+
+        "archivo": {
+          "tipo": "string"
+        }
+      },
+
+      "obligatorios": [
+        "id",
+        "tipo",
+        "subtipo",
+        "archivo"
+      ],
+
+      "campos_adicionales": false,
+
+      "ejemplos": [
+        {
+          "id": "res_014",
+          "tipo": "imagen",
+          "subtipo": "fondo",
+          "archivo": "templo_abandonado.webp"
+        }
+      ]
+    }
+  },
+
+  "tipos": {
+    "imagen": {
+      "subtipos": [
+        "portada",
+        "fondo",
+        "personaje",
+        "objeto",
+        "ilustracion",
+        "icono"
+      ]
+    },
+
+    "audio": {
+      "subtipos": [
+        "musica",
+        "ambiente",
+        "efecto",
+        "voz"
+      ]
+    }
+  },
+
+  "reglas": [
+    {
+      "id": "RESOURCE_TYPE_REGISTERED",
+      "descripcion": "Todo recurso debe utilizar un tipo registrado en este libro."
+    },
+    {
+      "id": "RESOURCE_SUBTYPE_COMPATIBLE",
+      "descripcion": "El subtipo debe pertenecer al tipo de recurso declarado."
+    },
+    {
+      "id": "RESOURCE_IDS_UNIQUE",
+      "descripcion": "Los IDs de recursos deben ser únicos dentro de un cassette."
+    }
+  ]
+}
