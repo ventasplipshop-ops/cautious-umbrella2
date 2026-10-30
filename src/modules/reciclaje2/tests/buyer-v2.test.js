@@ -32,6 +32,24 @@ test('solo los precios marcados se guardan como preferenciales y pueden reintent
   assert.match(nuevaCompra, /Compra registrada correctamente, pero no se pudo actualizar/);
 });
 
+test('Nueva Compra presenta precios y lineas compactas sin desplazamiento horizontal', () => {
+  assert.match(nuevaCompra, /type PriceSource = 'normal' \| 'mayorista' \| 'preferencial' \| 'manual'/);
+  assert.match(nuevaCompra, /Normal · ARS/);
+  assert.match(nuevaCompra, /Mayorista · ARS/);
+  assert.match(nuevaCompra, /Preferencial ·/);
+  assert.match(nuevaCompra, /Seleccionar precio/);
+  assert.match(nuevaCompra, /overflow-y-auto overflow-x-hidden/);
+  assert.match(nuevaCompra, /sm:hidden/);
+  assert.match(nuevaCompra, /hidden min-h-10 min-w-0 grid-cols/);
+  assert.match(nuevaCompra, /Editar preferencial/);
+  assert.doesNotMatch(nuevaCompra, /overflow-x-auto/);
+});
+
+test('cambiar moneda conserva importes como manuales y no los etiqueta con otra fuente', () => {
+  assert.match(nuevaCompra, /setLineas\(\(prev\)=>prev\.map\(\(linea\)=>\(\{\.\.\.linea,priceSource:'manual'\}\)\)\)/);
+  assert.match(nuevaCompra, /cambiar la moneda no convierte los importes escritos/);
+});
+
 test('proveedores Buyer son activos y estan habilitados para compra', () => {
   assert.match(nuevaCompra, /s\.activo !== false && s\.es_socio_compra === true/);
   assert.match(proveedores, /s\.activo!==false&&s\.es_socio_compra===true/);

@@ -15,7 +15,7 @@ ajustesOperacion.post("/:operacion_id/ajustar-cantidades",asyncHandler(async(q,r
   const c=prepareQuantityAdjustment(q.body,q.get?.("idempotency-key"),q.params.operacion_id);
   r.set?.("X-Idempotency-Key",c.eventoId);
   r.set?.("X-Evento-Id",c.eventoId);
-  r.json(await sql.ajustarCantidadesOperacion(q.companyId,c.eventoId,c.salidaId,c.operacionId,JSON.stringify(c.lineas)));
+  r.json(await sql.ajustarCantidadesOperacion(q.companyId,c.eventoId,c.salidaId,c.operacionId,JSON.stringify(c.ajuste)));
 }));
 export const dinero=actions(sql.dinero,["entrega","devolucion","justificacion_operacion","gasto","gasto_pendiente","cobro","pago","diferencia","ajuste","liquidacion_operacion","pago_fisico_operacion","vuelto_recibido"]);
 export const inventario=actions(sql.inventarioAccion,["ajuste","transferencia","transformacion"]);

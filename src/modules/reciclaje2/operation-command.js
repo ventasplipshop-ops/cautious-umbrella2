@@ -25,28 +25,46 @@ export function prepareQuantityAdjustment(body, headerKey, operationId) {
   const input = requireObject(body, "body");
   const operacionId = requireUuid(operationId, "operacion_id");
   const salidaId = requireUuid(input.salida_id, "salida_id");
+  const legacy = input.modo === undefined;
+  const modo = legacy ? "cantidad" : String(input.modo);
+  if (!["cantidad", "precio", "cantidad_y_precio"].includes(modo)) {
+    throw httpError(400, "modo debe ser cantidad, precio o cantidad_y_precio.");
+  }
+  const motivo = legacy ? undefined : String(input.motivo ?? "").trim();
+  if (!legacy && !motivo) throw httpError(400, "motivo es obligatorio.");
+  const observacion = input.observacion == null ? undefined : String(input.observacion).trim();
+  const topAllowed = new Set(["salida_id", "modo", "motivo", "observacion", "lineas"]);
+  if (Object.keys(input).some((key) => !topAllowed.has(key))) {
+    throw httpError(400, "El ajuste no admite cambios de cabecera, materiales, moneda ni totales.");
+  }
   if (!Array.isArray(input.lineas) || input.lineas.length === 0) {
-    throw httpError(400, "lineas requiere al menos una cantidad.");
+    throw httpError(400, "lineas requiere al menos un ajuste.");
   }
   const lineas = input.lineas.map((raw, index) => {
     const item = requireObject(raw, `lineas[${index}]`);
-    const allowed = new Set(["operacion_material_id", "cantidad_anterior", "cantidad_nueva"]);
+    const fields = modo === "cantidad"
+      ? ["operacion_material_id", "cantidad_anterior", "cantidad_nueva"]
+      : modo === "precio"
+        ? ["operacion_material_id", "precio_anterior", "precio_nuevo"]
+        : ["operacion_material_id", "cantidad_anterior", "cantidad_nueva", "precio_anterior", "precio_nuevo"];
+    const allowed = new Set(fields);
     if (Object.keys(item).some((key) => !allowed.has(key))) {
-      throw httpError(400, `lineas[${index}] sólo admite cantidades; no admite precios, materiales ni cabecera.`);
+      throw httpError(400, `lineas[${index}] contiene campos no admitidos para el modo ${modo}.`);
     }
     requireUuid(item.operacion_material_id, `lineas[${index}].operacion_material_id`);
-    for (const field of ["cantidad_anterior", "cantidad_nueva"]) {
+    for (const field of fields.slice(1)) {
+      if (!(field in item)) throw httpError(400, `lineas[${index}].${field} es obligatorio.`);
       if (!Number.isFinite(Number(item[field])) || Number(item[field]) <= 0) {
-        throw httpError(400, `lineas[${index}].${field} debe ser positiva.`);
+        if (field.startsWith("precio") && Number(item[field]) === 0) continue;
+        throw httpError(400, `lineas[${index}].${field} debe ser ${field.startsWith("precio") ? "mayor o igual a cero" : "positiva"}.`);
       }
     }
-    return {
-      operacion_material_id: item.operacion_material_id,
-      cantidad_anterior: Number(item.cantidad_anterior),
-      cantidad_nueva: Number(item.cantidad_nueva),
-    };
+    return Object.fromEntries(fields.map((field) => [field, field === "operacion_material_id" ? item[field] : Number(item[field])]));
   });
-  return { eventoId: mainEventId(headerKey), operacionId, salidaId, lineas };
+  return {
+    eventoId: mainEventId(headerKey), operacionId, salidaId, lineas, modo, motivo, observacion,
+    ajuste: legacy ? lineas : { modo, motivo, ...(observacion ? { observacion } : {}), lineas },
+  };
 }
 
 function validateCancellation(data, eventId) {
