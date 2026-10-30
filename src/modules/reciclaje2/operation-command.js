@@ -15,10 +15,38 @@ function uuidFromKey(key, scope) {
   return `${hex.slice(0,8)}-${hex.slice(8,12)}-${hex.slice(12,16)}-${hex.slice(16,20)}-${hex.slice(20)}`;
 }
 
-function mainEventId(clientKey) {
+export function mainEventId(clientKey) {
   if (!clientKey) return crypto.randomUUID();
   try { return requireUuid(clientKey, "Idempotency-Key"); }
   catch { return uuidFromKey(clientKey, "reciclaje2:operacion"); }
+}
+
+export function prepareQuantityAdjustment(body, headerKey, operationId) {
+  const input = requireObject(body, "body");
+  const operacionId = requireUuid(operationId, "operacion_id");
+  const salidaId = requireUuid(input.salida_id, "salida_id");
+  if (!Array.isArray(input.lineas) || input.lineas.length === 0) {
+    throw httpError(400, "lineas requiere al menos una cantidad.");
+  }
+  const lineas = input.lineas.map((raw, index) => {
+    const item = requireObject(raw, `lineas[${index}]`);
+    const allowed = new Set(["operacion_material_id", "cantidad_anterior", "cantidad_nueva"]);
+    if (Object.keys(item).some((key) => !allowed.has(key))) {
+      throw httpError(400, `lineas[${index}] sólo admite cantidades; no admite precios, materiales ni cabecera.`);
+    }
+    requireUuid(item.operacion_material_id, `lineas[${index}].operacion_material_id`);
+    for (const field of ["cantidad_anterior", "cantidad_nueva"]) {
+      if (!Number.isFinite(Number(item[field])) || Number(item[field]) <= 0) {
+        throw httpError(400, `lineas[${index}].${field} debe ser positiva.`);
+      }
+    }
+    return {
+      operacion_material_id: item.operacion_material_id,
+      cantidad_anterior: Number(item.cantidad_anterior),
+      cantidad_nueva: Number(item.cantidad_nueva),
+    };
+  });
+  return { eventoId: mainEventId(headerKey), operacionId, salidaId, lineas };
 }
 
 function validateCancellation(data, eventId) {

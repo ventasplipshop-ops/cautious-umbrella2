@@ -20,6 +20,7 @@ export const calls = {
   precios: "SELECT reciclaje2.listar_precios_socio($1,$2,$3) AS data",
   configuracion: "SELECT reciclaje2.upsert_configuracion($1,$2,$3,$4::jsonb) AS data",
   operacion: "SELECT reciclaje2.orquestar_operacion($1,$2,$3,$4::jsonb) AS data",
+  ajustarCantidadesOperacion: "SELECT reciclaje2.ajustar_cantidades_operacion_en_proceso($1,$2,$3,$4,$5::jsonb) AS data",
   dinero: "SELECT reciclaje2.orquestar_dinero($1,$2,$3,$4::jsonb) AS data",
   inventarioAccion: "SELECT reciclaje2.orquestar_inventario($1,$2,$3,$4::jsonb) AS data",
   finanzasAccion: "SELECT reciclaje2.orquestar_finanzas($1,$2,$3,$4::jsonb) AS data"
